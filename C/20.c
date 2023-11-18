@@ -1,51 +1,71 @@
+#include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#define STACK_EMPTY CHAR_MIN
+
+typedef struct node {
+  char value;
+  struct node *next;
+} node;
+
+typedef node *stack;
+
+bool push(stack *stack, char value) {
+  node *newNode = malloc(sizeof(node));
+  if (newNode == NULL) {
+    return false;
+  }
+
+  newNode->value = value;
+  newNode->next = *stack;
+  *stack = newNode;
+
+  return true;
+}
+
+char pop(stack *stack) {
+  if (*stack == NULL) {
+    return STACK_EMPTY;
+  }
+
+  char result = (*stack)->value;
+  node *tmp = *stack;
+  *stack = (*stack)->next;
+  free(tmp);
+  return result;
+}
 
 bool isValid(char *s) {
-  char open[7];
-  int j = 0;
+  stack open = NULL;
 
-  for (int o = 0; o < 7; o++) {
-    open[o] = ' ';
-  }
-
-  for (int i = 0; i < 14; i++) {
+  for (int i = 0; i < (int)strlen(s); i++) {
     if (s[i] == '(' || s[i] == '[' || s[i] == '{') {
-      open[j] = s[i];
-    }
-
-    if (s[i] == ')' && open[j - 1] == '(') {
-      open[j - 1] = ' ';
-    } else if (s[i] == ']' && open[j - 1] == '[') {
-      open[j - 1] = ' ';
-    } else if (s[i] == '}' && open[j - 1] == '{') {
-      open[j - 1] = ' ';
+      push(&open, s[i]);
     } else {
-      break;
+      if (open == NULL || (s[i] == ')' && open->value != '(') ||
+          (s[i] == ']' && open->value != '[') ||
+          (s[i] == '}' && open->value != '{')) {
+        printf("String is not valid\n");
+        return false;
+      }
+      pop(&open);
     }
-
-    printf("i = %d\n", j);
-    printf("j = %d\n", i);
   }
 
-  printf("%s\n", open);
-  printf("%s\n", s);
-
-  for (int o = 0; o < 7; o++) {
-    if (open[o] == ' ') {
-      printf("The string is valid\n");
-      return true;
-    } else {
-      printf("The string is not valid\n");
-      break;
-    }
+  if (open != NULL) {
+    printf("String is not valid\n");
+    return false;
+  } else {
+    printf("String is valid\n");
+    return true;
   }
-  return false;
 }
 
 int main() {
   char *s[14];
-  *s = "()";
+  *s = ")";
   isValid(*s);
 }
