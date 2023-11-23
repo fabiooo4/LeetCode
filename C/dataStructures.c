@@ -5,18 +5,46 @@
 
 #define STACKCHAR_EMPTY CHAR_MIN
 
-// linked list node
-typedef struct node {
+// nodes
+typedef struct nodeChar {
   char value;
-  struct node *next;
-} node;
+  struct nodeChar *next;
+} nodeChar;
+
+typedef struct nodeInt {
+  int value;
+  struct nodeInt *next;
+} nodeInt;
+//
+
+// linked list
+void printList(nodeInt *head) {
+  nodeInt *tmp = head;
+
+  while (tmp != NULL) {
+    printf("%d ", tmp->value);
+    tmp = tmp->next;
+  }
+}
+
+nodeInt *addNode(int n) {
+  nodeInt *newNode = malloc(sizeof(nodeInt));
+  if (newNode == NULL) {
+    return NULL;
+  }
+
+  newNode->value = n;
+  newNode->next = NULL;
+
+  return newNode;
+}
 //
 
 // char stack
-typedef node *stackChar;
+typedef nodeChar *stackChar;
 
 bool stackCharPush(stackChar *stack, char value) {
-  node *newNode = malloc(sizeof(node));
+  nodeChar *newNode = malloc(sizeof(nodeChar));
   if (newNode == NULL) {
     return false;
   }
@@ -34,7 +62,7 @@ char stackCharPop(stackChar *stack) {
   }
 
   char result = (*stack)->value;
-  node *tmp = *stack;
+  nodeChar *tmp = *stack;
   *stack = (*stack)->next;
   free(tmp);
   return result;
@@ -50,10 +78,10 @@ char stackCharTop(stackChar *stack) {
 //
 
 // int stack
-typedef node *stackInt;
+typedef nodeInt *stackInt;
 
 bool stackIntPush(stackInt *stack, int value) {
-  node *newNode = malloc(sizeof(node));
+  nodeInt *newNode = malloc(sizeof(nodeInt));
   if (newNode == NULL) {
     return false;
   }
@@ -71,7 +99,7 @@ char stackIntPop(stackInt *stack) {
   }
 
   char result = (*stack)->value;
-  node *tmp = *stack;
+  nodeInt *tmp = *stack;
   *stack = (*stack)->next;
   free(tmp);
   return result;
@@ -87,15 +115,18 @@ char stackIntTop(stackInt *stack) {
 //
 
 int main() {
-  stackChar s1 = NULL;
+  nodeInt *list;
+  nodeInt *head = NULL;
 
-  stackCharPush(&s1, '1');
-  stackCharPush(&s1, '2');
-  stackCharPush(&s1, '3');
-  stackCharPush(&s1, '4');
-  stackCharPush(&s1, '5');
+  for (long i = 0; i < 256; i++) {
+    list = addNode(i);
+    list->next = head;
+    head = list;
+  }
 
-  printf("s1 = %c\n", stackCharTop(&s1));
+  printf("[ ");
+  printList(head);
+  printf("]\n");
 
   return 0;
 }
