@@ -27,17 +27,143 @@ void printList(nodeInt *head) {
   }
 }
 
-nodeInt *addNode(int n) {
+nodeInt *createNode(int n) {
   nodeInt *newNode = malloc(sizeof(nodeInt));
-  if (newNode == NULL) {
+  if (newNode == NULL)
     return NULL;
-  }
 
   newNode->value = n;
   newNode->next = NULL;
 
   return newNode;
 }
+
+void pushNode(nodeInt **head, int n) {
+  nodeInt *newNode = malloc(sizeof(nodeInt));
+  newNode->value = n;
+  newNode->next = *head;
+
+  *head = newNode;
+}
+
+void appendNode(nodeInt **head, int n) {
+  nodeInt *newNode = malloc(sizeof(nodeInt));
+  nodeInt *last = *head;
+
+  if (newNode == NULL)
+    return;
+
+  newNode->value = n;
+  newNode->next = NULL;
+
+  if (*head == NULL) {
+    *head = newNode;
+    return;
+  }
+
+  while (last->next != NULL) {
+    last = last->next;
+  }
+
+  last->next = newNode;
+  return;
+}
+
+nodeInt *addNodeAtHead(nodeInt **head, nodeInt *nodeToInsert) {
+  nodeToInsert->next = *head;
+  *head = nodeToInsert;
+
+  return nodeToInsert;
+}
+
+nodeInt *findNode(nodeInt *head, int n) {
+  nodeInt *tmp = head;
+
+  while (tmp != NULL) {
+    if (tmp->value == n) {
+      return tmp;
+    }
+    tmp = tmp->next;
+  }
+  return NULL;
+}
+
+void deleteNode(nodeInt **head, int n) {
+  nodeInt *tmp = *head;
+  nodeInt *prev;
+
+  if (tmp == NULL)
+    return;
+
+  if (tmp != NULL && tmp->value == n) {
+    *head = tmp->next;
+    free(tmp);
+  }
+
+  while (tmp != NULL && tmp->value != n) {
+    prev = tmp;
+    tmp = tmp->next;
+  }
+
+  prev->next = tmp->next;
+  free(tmp);
+}
+
+void insertAfterNode(nodeInt *nodeToInsertAfter, nodeInt *newNode) {
+  newNode->next = nodeToInsertAfter->next;
+  nodeToInsertAfter->next = newNode;
+}
+
+nodeInt *swapNodes(nodeInt *node1, nodeInt *node2) {
+  nodeInt *tmp = node2->next;
+
+  node2->next = node1;
+  node1->next = tmp;
+
+  return node2;
+}
+
+int listSize(nodeInt *head) {
+  nodeInt *tmp = head;
+  int count = 0;
+
+  while (tmp != NULL) {
+    count++;
+    tmp = tmp->next;
+  }
+
+  return count;
+}
+
+void sortList(nodeInt **head) {
+  nodeInt **h = head;
+  bool swapped;
+  int size = listSize(*h);
+
+  if (*head == NULL)
+    return;
+
+  for (int i = 0; i < size; i++) {
+    h = head;
+    swapped = 0;
+
+    for (int j = 0; j < size - i - 1; j++) {
+      nodeInt *node1 = *h;
+      nodeInt *node2 = node1->next;
+
+      if (node1->value > node2->value) {
+        *h = swapNodes(node1, node2);
+        swapped = 1;
+      }
+
+      h = &(*h)->next;
+    }
+
+    if (swapped == 0)
+      break;
+  }
+}
+
 //
 
 // char stack
@@ -115,14 +241,17 @@ char stackIntTop(stackInt *stack) {
 //
 
 int main() {
-  nodeInt *list;
   nodeInt *head = NULL;
 
-  for (long i = 0; i < 256; i++) {
-    list = addNode(i);
-    list->next = head;
-    head = list;
+  for (long i = 0; i < 5; i++) {
+    pushNode(&head, i);
   }
+
+  printf("[ ");
+  printList(head);
+  printf("]\n");
+
+  sortList(&head);
 
   printf("[ ");
   printList(head);
