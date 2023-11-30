@@ -42,36 +42,29 @@ void appendNode(ListNode **head, int n) {
 ListNode *mergeTwoLists(ListNode *list1, ListNode *list2) {
   ListNode *output = NULL;
 
-  if (list1 == NULL && list2 == NULL) {
-    return NULL;
-  }
-
-  if (list1 == NULL) {
-    return list2;
-  }
-
-  if (list2 == NULL) {
-    return list1;
-  }
-
   while (list1 != NULL && list2 != NULL) {
-    printf("%d < %d\n", list1->val, list2->val);
     if (list1->val < list2->val) {
       appendNode(&output, list1->val);
       list1 = list1->next;
-    } else if (list1->val == list2->val) {
-      appendNode(&output, list1->val);
-      appendNode(&output, list2->val);
-      list1 = list1->next;
-      list2 = list2->next;
     } else {
       appendNode(&output, list2->val);
       list2 = list2->next;
     }
+  }
 
-    if (list2 == NULL && list1 != NULL) {
+  /* If one list finished iterating before the other then add the unfinished one
+  to the end of the list. */
+  if (list1 != NULL) {
+    while (list1 != NULL) {
       appendNode(&output, list1->val);
       list1 = list1->next;
+    }
+  }
+
+  if (list2 != NULL) {
+    while (list2 != NULL) {
+      appendNode(&output, list2->val);
+      list2 = list2->next;
     }
   }
 
@@ -79,8 +72,8 @@ ListNode *mergeTwoLists(ListNode *list1, ListNode *list2) {
 }
 
 int main() {
-  int list1[] = {5, 6};
-  int list2[] = {1, 3, 4};
+  int list1[] = {1, 3, 5};
+  int list2[] = {5, 6};
 
   ListNode *head1 = NULL;
   ListNode *head2 = NULL;
